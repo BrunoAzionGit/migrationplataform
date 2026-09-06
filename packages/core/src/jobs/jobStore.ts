@@ -1,6 +1,6 @@
-import { EdgeSqlClient } from "../db/edgeSql.js";
-import { generateJobId } from "./jobId.js";
-import type { Job, JobItem, ModuleName } from "../types.js";
+import { EdgeSqlClient } from "../db/edgeSql";
+import { generateJobId } from "./jobId";
+import type { Job, JobItem, ModuleName } from "../types";
 
 /**
  * Camada de acesso a `jobs` + `job_items` (ver db/schema.sql).

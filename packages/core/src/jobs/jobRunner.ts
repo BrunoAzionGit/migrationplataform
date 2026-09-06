@@ -1,5 +1,5 @@
-import type { ExecuteItemResult, Job, JobItem } from "../types.js";
-import type { JobStore } from "./jobStore.js";
+import type { ExecuteItemResult, Job, JobItem } from "../types";
+import type { JobStore } from "./jobStore";
 
 /**
  * A máquina de estados de "Executar" — o mesmo helper é usado pelos 4 módulos.

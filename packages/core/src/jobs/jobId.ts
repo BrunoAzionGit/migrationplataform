@@ -1,4 +1,4 @@
-import { MODULE_PREFIX, type ModuleName } from "../types.js";
+import { MODULE_PREFIX, type ModuleName } from "../types";
 
 /**
  * Gera um Job ID global único, prefixado pelo módulo (ex: "bnd-8f3a1c2e91").

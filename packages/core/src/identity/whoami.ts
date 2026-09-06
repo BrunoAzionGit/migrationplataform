@@ -1,4 +1,4 @@
-import { AzionClient } from "../azion/client.js";
+import { AzionClient } from "../azion/client";
 
 /**
  * Resolve, de forma best-effort, a identidade (e-mail/conta) por trás de um
