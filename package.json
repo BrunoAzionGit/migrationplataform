@@ -1,0 +1,27 @@
+{
+  "name": "azion-migration-platform",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Plataforma modular de migração Cloudflare -> Azion (sem N8N). Ver docs/ARCHITECTURE.md.",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:portal": "npm run dev -w apps/portal",
+    "dev:bind-import": "npm run dev -w apps/mod-bind-import",
+    "dev:cf-dns-import": "npm run dev -w apps/mod-cf-dns-import",
+    "dev:cf-acl-networklists": "npm run dev -w apps/mod-cf-acl-networklists",
+    "dev:cf-proxy-migration": "npm run dev -w apps/mod-cf-proxy-migration",
+    "build:core": "npm run build -w packages/core",
+    "build": "npm run build --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
