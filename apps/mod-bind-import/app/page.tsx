@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Card, PageShell, PrimaryButton, StatusBanner } from "@azion-migration/ui";
+import { PORTAL_URL } from "../lib/portalUrl";
 
 /**
  * Fase 1 do padrão Importar -> Executar (ver ARCHITECTURE.md seção 5).
@@ -55,7 +56,7 @@ export default function BindImportPage() {
   return (
     <PageShell>
       <Card>
-        <a href="/" style={{ color: "#64748b", textDecoration: "none", fontSize: "0.85rem" }}>
+        <a href={PORTAL_URL} style={{ color: "#64748b", textDecoration: "none", fontSize: "0.85rem" }}>
           ← Portal
         </a>
         <h1 style={{ fontSize: "1.4rem", marginTop: 12 }}>Importar arquivo BIND</h1>

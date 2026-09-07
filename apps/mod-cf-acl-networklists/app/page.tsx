@@ -1,4 +1,5 @@
 import { Card, PageShell } from "@azion-migration/ui";
+import { PORTAL_URL } from "../lib/portalUrl";
 
 /**
  * Fase 3 do roadmap (ver /docs/ARCHITECTURE.md) — ainda não construído.
@@ -9,7 +10,7 @@ export default function Placeholder() {
   return (
     <PageShell>
       <Card>
-        <a href="/" style={{ color: "#64748b", textDecoration: "none", fontSize: "0.85rem" }}>
+        <a href={PORTAL_URL} style={{ color: "#64748b", textDecoration: "none", fontSize: "0.85rem" }}>
           ← Portal
         </a>
         <h1 style={{ fontSize: "1.3rem", marginTop: 12 }}>Cloudflare ACLs -> Network Lists</h1>

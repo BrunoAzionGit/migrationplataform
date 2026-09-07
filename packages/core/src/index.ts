@@ -1,4 +1,5 @@
 export * from "./types";
+export * from "./config/routes";
 export * from "./jobs/jobId";
 export * from "./jobs/jobStore";
 export * from "./jobs/jobRunner";

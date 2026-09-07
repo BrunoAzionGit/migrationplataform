@@ -1,15 +1,16 @@
-import { MODULE_PREFIX, type ModuleName } from "@azion-migration/core";
+import { MODULE_PREFIX, resolveModuleUrl, type ModuleName } from "@azion-migration/core";
 
 /**
- * Onde cada módulo mora publicamente — subdomínio próprio por módulo
- * (decisão registrada em docs/ARCHITECTURE.md seção 9). Ajustar para os
- * domínios reais quando cada módulo tiver Edge Application/DNS configurados.
+ * Onde cada módulo mora publicamente — resolvido por `resolveModuleUrl` em
+ * packages/core (localhost:<porta> em dev, subdomínio em produção). As
+ * variáveis NEXT_PUBLIC_* abaixo são o jeito de sobrescrever isso pra
+ * staging ou pro domínio real, sem tocar código.
  */
 export const MODULE_BASE_URL: Record<ModuleName, string> = {
-  "bind-import": process.env.NEXT_PUBLIC_BIND_IMPORT_URL ?? "https://bind.migracao.example.com",
-  "cf-dns-import": process.env.NEXT_PUBLIC_CF_DNS_IMPORT_URL ?? "https://dns.migracao.example.com",
-  "cf-acl-networklists": process.env.NEXT_PUBLIC_CF_ACL_URL ?? "https://acl.migracao.example.com",
-  "cf-proxy-migration": process.env.NEXT_PUBLIC_CF_PROXY_URL ?? "https://proxy.migracao.example.com",
+  "bind-import": resolveModuleUrl("bind-import", process.env.NEXT_PUBLIC_BIND_IMPORT_URL),
+  "cf-dns-import": resolveModuleUrl("cf-dns-import", process.env.NEXT_PUBLIC_CF_DNS_IMPORT_URL),
+  "cf-acl-networklists": resolveModuleUrl("cf-acl-networklists", process.env.NEXT_PUBLIC_CF_ACL_URL),
+  "cf-proxy-migration": resolveModuleUrl("cf-proxy-migration", process.env.NEXT_PUBLIC_CF_PROXY_URL),
 };
 
 const PREFIX_TO_MODULE = Object.fromEntries(
