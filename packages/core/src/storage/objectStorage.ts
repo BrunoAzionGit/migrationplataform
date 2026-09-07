@@ -1,23 +1,52 @@
+import { S3Client, PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
+
 /**
- * Client fino para o Azion Object Storage (protocolo S3-compatível).
+ * Client para o Azion Object Storage via protocolo S3-compatível.
+ * Endpoint e credenciais confirmados em docs/ARCHITECTURE.md seção 10 /
+ * https://www.azion.com/en/documentation/products/store/storage/s3-protocol-for-object-storage/ :
+ *   - endpoint: https://s3.<region>.azionstorage.net (região usada no exemplo: us-east-005)
+ *   - credenciais: access key + secret key gerados por bucket, com capacidades
+ *     readFiles/writeFiles/listFiles (Console: bucket -> aba de credenciais S3)
+ *   - bucket recomendado como "Restricted": só acessível via API/S3, nunca pelo
+ *     Azion Web Platform direto — é o certo pra guardar input/relatório privados.
  *
- * TODO (Fase 0): trocar por um client S3 de verdade (ex: @aws-sdk/client-s3
- * apontando para o endpoint da Azion) — assinar requisições S3 na mão não vale
- * a pena. Esta interface já é o formato que o resto do código espera, então
- * trocar a implementação por dentro não deve exigir mudar quem a usa.
+ * NÃO testei a conectividade real a partir do ambiente onde este código foi
+ * escrito (política de rede do sandbox bloqueia esse domínio) — testar no seu
+ * ambiente (local ou já publicado) antes de confiar cegamente nisso.
  *
  * Uso: guardar o input original de cada job (arquivo BIND, JSON de zona lida
- * da Cloudflare) e o relatório final — nunca segredos/tokens.
+ * da Cloudflare) e o relatório final — nunca segredos/tokens do usuário.
  */
 
 export interface ObjectStorageConfig {
   bucket: string;
   /** Prefixo por módulo dentro do bucket, ex: "bind-import/" */
   prefix: string;
+  /** Endpoint S3-compatível da Azion, ex: https://s3.us-east-005.azionstorage.net */
+  endpoint: string;
+  /** Região usada no endpoint (ex: "us-east-005") — exigida pelo SDK S3, mesmo não sendo AWS de verdade. */
+  region: string;
+  accessKeyId: string;
+  secretAccessKey: string;
 }
 
 export class ObjectStorageClient {
-  constructor(private readonly config: ObjectStorageConfig) {}
+  private readonly s3: S3Client;
+
+  constructor(private readonly config: ObjectStorageConfig) {
+    this.s3 = new S3Client({
+      endpoint: config.endpoint,
+      region: config.region,
+      credentials: {
+        accessKeyId: config.accessKeyId,
+        secretAccessKey: config.secretAccessKey,
+      },
+      // Endpoints S3-compatíveis fora da AWS geralmente precisam de path-style
+      // (bucket.no.path em vez de bucket-como-subdomínio) — ver o guia de S3
+      // protocol da Azion linkado acima.
+      forcePathStyle: true,
+    });
+  }
 
   private key(jobId: string, filename: string): string {
     return `${this.config.prefix}${jobId}/${filename}`;
@@ -25,16 +54,32 @@ export class ObjectStorageClient {
 
   async putInput(jobId: string, filename: string, content: string | Buffer): Promise<string> {
     const key = this.key(jobId, filename);
-    // TODO: substituir por PutObjectCommand do @aws-sdk/client-s3.
-    throw new Error(`TODO: implementar upload real para ${this.config.bucket}/${key}`);
+    await this.s3.send(
+      new PutObjectCommand({
+        Bucket: this.config.bucket,
+        Key: key,
+        Body: content,
+      })
+    );
+    return key;
   }
 
   async putReport(jobId: string, html: string): Promise<string> {
-    return this.putInput(jobId, "report.html", html);
+    const key = this.key(jobId, "report.html");
+    await this.s3.send(
+      new PutObjectCommand({
+        Bucket: this.config.bucket,
+        Key: key,
+        Body: html,
+        ContentType: "text/html; charset=utf-8",
+      })
+    );
+    return key;
   }
 
+  /** `ref` é a key retornada por putInput/putReport (não uma URL). */
   async get(ref: string): Promise<string> {
-    // TODO: substituir por GetObjectCommand do @aws-sdk/client-s3.
-    throw new Error(`TODO: implementar download real de ${ref}`);
+    const res = await this.s3.send(new GetObjectCommand({ Bucket: this.config.bucket, Key: ref }));
+    return (await res.Body?.transformToString()) ?? "";
   }
 }

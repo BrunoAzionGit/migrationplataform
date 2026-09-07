@@ -32,20 +32,26 @@ arquivo de zona BIND e cria os registros no Azion Edge DNS, seguindo o padrão
 
 ## Variáveis de ambiente
 
+Ver `.env.example` (copiar para `.env.local`, que já está no `.gitignore` — nunca commitar
+com valores reais).
+
 | Nome | Descrição |
 |---|---|
-| `EDGE_SQL_URL` | URL da API do Edge SQL (base de dados compartilhada `jobs`/`job_items`) |
+| `EDGE_SQL_URL` | `https://api.azion.com/v4/edge_sql/databases/<id>/query` — confirmado e em uso |
 | `EDGE_SQL_TOKEN` | Token de acesso ao Edge SQL (da aplicação, não do usuário) |
-| `OBJECT_STORAGE_BUCKET` | Bucket do Object Storage para guardar os arquivos BIND originais |
+| `OBJECT_STORAGE_BUCKET` | Nome do bucket (Restricted) para os arquivos BIND originais e relatórios |
+| `OBJECT_STORAGE_ENDPOINT` | Endpoint S3-compatível, ex.: `https://s3.us-east-005.azionstorage.net` |
+| `OBJECT_STORAGE_REGION` | Região do endpoint, ex.: `us-east-005` |
+| `OBJECT_STORAGE_ACCESS_KEY` | Access key da credencial S3 do bucket (capacidades readFiles+writeFiles) |
+| `OBJECT_STORAGE_SECRET_KEY` | Secret key correspondente — **rotacionar se algum dia vazar em chat/log** |
 
 ## O que falta (marcado com `TODO` no código)
 
-- Implementar de fato o client do Object Storage (`packages/core/src/storage/objectStorage.ts`)
-  com um SDK S3 real.
-- Confirmar o formato exato de request/response da API do Edge SQL
-  (`packages/core/src/db/edgeSql.ts`).
 - Confirmar o endpoint de identidade da Azion equivalente ao `azion whoami`
   (`packages/core/src/identity/whoami.ts`).
 - Persistir `input_ref`/`created_by` no job (hoje os TODOs no `route.ts` mostram onde).
 - Testes automatizados do `bindParser.ts` (é a peça com mais risco de regressão silenciosa —
   ver `docs/MVP-LEGACY-NOTES.md`).
+- **Object Storage não foi testado de ponta a ponta ainda** (o ambiente onde o client foi
+  escrito não tinha rede liberada pro domínio da Azion) — testar o `putInput`/`get` de
+  verdade antes de confiar no fluxo completo.

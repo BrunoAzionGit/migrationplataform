@@ -18,6 +18,10 @@ export function getObjectStorage(): ObjectStorageClient {
   return new ObjectStorageClient({
     bucket: requireEnv("OBJECT_STORAGE_BUCKET"),
     prefix: "bind-import/",
+    endpoint: requireEnv("OBJECT_STORAGE_ENDPOINT"),
+    region: requireEnv("OBJECT_STORAGE_REGION"),
+    accessKeyId: requireEnv("OBJECT_STORAGE_ACCESS_KEY"),
+    secretAccessKey: requireEnv("OBJECT_STORAGE_SECRET_KEY"),
   });
 }
 
